@@ -323,11 +323,14 @@ document.getElementById('continue-btn').addEventListener('click', () => {
     } else {
       errorUS.classList.add('hidden');
       if(usSet.value==='all-us'){
-        errorUSSubmit.classList.remove('hidden');
-        valid = false;
-      } else {
-        errorUSSubmit.classList.add('hidden');
-      }
+    usAlert.classList.remove('hidden');
+    // Do not block submission:
+    // errorUSSubmit.classList.remove('hidden');
+    // valid = false;
+} else {
+    usAlert.classList.add('hidden');
+    errorUSSubmit.classList.add('hidden');
+}
     }
   }
 
