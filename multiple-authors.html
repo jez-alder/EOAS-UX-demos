@@ -152,22 +152,22 @@
 
     <!-- Question 0 (original) -->
     <div class="question">
-      <p><strong>Do any of the authors work for the US, UK, Canada or Australia government?</strong></p>
+  <p><strong>Do any of the authors work for the US, UK, Canada or Australia government?</strong></p>
 
-      <label>
-        <input type="radio" name="gov-region" value="us"> No
-      </label>
+  <label>
+    <input type="radio" name="gov-region" value="no"> No
+  </label>
 
-      <label>
-        <input type="radio" name="gov-region" value="us"> US
-      </label>
+  <label>
+    <input type="radio" name="gov-region" value="us"> US
+  </label>
 
-      <label>
-        <input type="radio" name="gov-region" value="other"> UK, Canada or Australia
-      </label>
+  <label>
+    <input type="radio" name="gov-region" value="other"> UK, Canada or Australia
+  </label>
 
-      <div id="error-q0" class="error hidden">Select US or UK, Canada or Australia</div>
-    </div>
+  <div id="error-q0" class="error hidden">Select No, US or UK, Canada or Australia</div>
+</div>
 
     <!-- Crown Copyright question for UK/Canada/Australia -->
     <div id="crown-question" class="question hidden">
@@ -241,156 +241,194 @@
 </form>
 
 <script>
-  const confirmCheckbox = document.getElementById('confirm-checkbox');
-  const baseline2Block = document.getElementById('baseline2-block');
-  const errorConfirm = document.getElementById('error-confirm');
+const confirmCheckbox = document.getElementById('confirm-checkbox');
+const baseline2Block = document.getElementById('baseline2-block');
+const errorConfirm = document.getElementById('error-confirm');
 
-  // Show baseline2 questions only if confirmed
-  confirmCheckbox.addEventListener('change', () => {
-    if(confirmCheckbox.checked) {
-      baseline2Block.classList.remove('hidden');
-      errorConfirm.classList.add('hidden');
-    } else {
-      baseline2Block.classList.add('hidden');
+const regionRadios = document.querySelectorAll('input[name="gov-region"]');
+const q1Block = document.getElementById('q1-block');
+const q2Block = document.getElementById('yourself-question');
+const q3Block = document.getElementById('coauthors-question');
+const crownBlock = document.getElementById('crown-question');
+const errorCrown = document.getElementById('error-crown');
+const crownAlert = document.getElementById('crown-alert');
+const errorCrownSubmit = document.getElementById('error-crown-submit');
+
+const errorQ0 = document.getElementById('error-q0');
+const errorQ1 = document.getElementById('error-q1');
+const errorQ2 = document.getElementById('error-q2');
+const errorQ3 = document.getElementById('error-q3');
+
+function clearAllUSQuestions() {
+  document.querySelectorAll(
+    'input[name="all-authors"], input[name="self-gov"], input[name="coauthors-gov"]'
+  ).forEach(r => r.checked = false);
+
+  errorQ1.classList.add('hidden');
+  errorQ2.classList.add('hidden');
+  errorQ3.classList.add('hidden');
+}
+
+// Show baseline2 questions only if confirmed
+confirmCheckbox.addEventListener('change', () => {
+  if(confirmCheckbox.checked) {
+    baseline2Block.classList.remove('hidden');
+    errorConfirm.classList.add('hidden');
+  } else {
+    baseline2Block.classList.add('hidden');
+  }
+});
+
+// Show/hide based on first question selection
+regionRadios.forEach(radio => {
+  radio.addEventListener('change', () => {
+    errorQ0.classList.add('hidden'); // clear error
+
+    if (radio.value === "us") {
+      q1Block.classList.remove('hidden');
+      q2Block.classList.add('hidden');
+      q3Block.classList.add('hidden');
+      if(crownBlock) crownBlock.classList.add('hidden');
+      if(errorCrown) errorCrown.classList.add('hidden');
+    } else if (radio.value === "other") {
+      if(crownBlock) crownBlock.classList.remove('hidden');
+      q1Block.classList.add('hidden');
+      q2Block.classList.add('hidden');
+      q3Block.classList.add('hidden');
+    } else { // "no"
+      q1Block.classList.add('hidden');
+      q2Block.classList.add('hidden');
+      q3Block.classList.add('hidden');
+      if(crownBlock) crownBlock.classList.add('hidden');
+      if(errorCrown) errorCrown.classList.add('hidden');
+      if(crownAlert) crownAlert.classList.add('hidden');
+      if(errorCrownSubmit) errorCrownSubmit.classList.add('hidden');
     }
   });
+});
 
-  const regionRadios = document.querySelectorAll('input[name="gov-region"]');
-  const q1Block = document.getElementById('q1-block');
-  const q2Block = document.getElementById('yourself-question');
-  const q3Block = document.getElementById('coauthors-question');
-
-  const crownBlock = document.getElementById('crown-question');
-  const crownRadios = document.querySelectorAll('input[name="crown-copyright"]');
-  const crownAlert = document.getElementById('crown-alert');
-  const errorQ0 = document.getElementById('error-q0');
-  const errorQ1 = document.getElementById('error-q1');
-  const errorQ2 = document.getElementById('error-q2');
-  const errorQ3 = document.getElementById('error-q3');
-  const errorCrown = document.getElementById('error-crown');
-
-  function clearAllUSQuestions() {
-    document.querySelectorAll(
-      'input[name="all-authors"], input[name="self-gov"], input[name="coauthors-gov"]'
-    ).forEach(r => r.checked = false);
-
+// US flow: show/hide supplemental questions
+document.querySelectorAll('input[name="all-authors"]').forEach(radio => {
+  radio.addEventListener('change', () => {
     errorQ1.classList.add('hidden');
-    errorQ2.classList.add('hidden');
-    errorQ3.classList.add('hidden');
-  }
 
-  // Show Q1/US questions or Crown question depending on region
-  regionRadios.forEach(radio => {
-    radio.addEventListener('change', () => {
-      errorQ0.classList.add('hidden');
-      crownBlock.classList.add('hidden');
-      crownAlert.classList.add('hidden');
-      errorCrown.classList.add('hidden');
+    if (radio.value === "yes") {
+      q2Block.classList.add('hidden');
+      q3Block.classList.add('hidden');
 
-      if(radio.value === "us") {
-        q1Block.classList.remove('hidden');
-      } else {
-        q1Block.classList.add('hidden');
-        q2Block.classList.add('hidden');
-        q3Block.classList.add('hidden');
-        clearAllUSQuestions();
-        crownBlock.classList.remove('hidden');
-      }
-    });
+      document.querySelectorAll(
+        'input[name="self-gov"], input[name="coauthors-gov"]'
+      ).forEach(r => r.checked = false);
+
+      errorQ2.classList.add('hidden');
+      errorQ3.classList.add('hidden');
+    } else {
+      q2Block.classList.remove('hidden');
+      q3Block.classList.remove('hidden');
+    }
   });
+});
 
-  // Crown alert logic
+// Hide supplemental errors when answered
+document.querySelectorAll('input[name="self-gov"]').forEach(r =>
+  r.addEventListener('change', () => errorQ2.classList.add('hidden'))
+);
+document.querySelectorAll('input[name="coauthors-gov"]').forEach(r =>
+  r.addEventListener('change', () => errorQ3.classList.add('hidden'))
+);
+
+// Crown copyright logic
+if(crownBlock) {
+  const crownRadios = document.querySelectorAll('input[name="crown"]');
   crownRadios.forEach(radio => {
     radio.addEventListener('change', () => {
       errorCrown.classList.add('hidden');
-      if(radio.value === 'yes'){
-        crownAlert.classList.remove('hidden');
+      if(radio.value === "yes") {
+        if(crownAlert) crownAlert.classList.remove('hidden');
+        if(errorCrownSubmit) errorCrownSubmit.classList.add('hidden');
       } else {
-        crownAlert.classList.add('hidden');
+        if(crownAlert) crownAlert.classList.add('hidden');
+        if(errorCrownSubmit) errorCrownSubmit.classList.add('hidden');
       }
     });
   });
-
-  // When Q1 changes show/hide Q2 + Q3
-  document.querySelectorAll('input[name="all-authors"]').forEach(radio => {
-    radio.addEventListener('change', () => {
-      errorQ1.classList.add('hidden');
-
-      if (radio.value === "yes") {
-        q2Block.classList.add('hidden');
-        q3Block.classList.add('hidden');
-
-        document.querySelectorAll(
-          'input[name="self-gov"], input[name="coauthors-gov"]'
-        ).forEach(r => r.checked = false);
-
-        errorQ2.classList.add('hidden');
-        errorQ3.classList.add('hidden');
-      } else {
-        q2Block.classList.remove('hidden');
-        q3Block.classList.remove('hidden');
-      }
-    });
-  });
-
-  // Hide supplemental errors when answered
-  document.querySelectorAll('input[name="self-gov"]').forEach(r =>
-    r.addEventListener('change', () => errorQ2.classList.add('hidden'))
-  );
-  document.querySelectorAll('input[name="coauthors-gov"]').forEach(r =>
-    r.addEventListener('change', () => errorQ3.classList.add('hidden'))
-  );
-
-  // Save & Continue validation
-  document.getElementById("continue-btn").addEventListener("click", function () {
-    let valid = true;
-
-    if(!confirmCheckbox.checked){
-      errorConfirm.classList.remove('hidden');
-      valid=false;
-    } else { errorConfirm.classList.add('hidden'); }
-
-    if(confirmCheckbox.checked){
-      const region = document.querySelector('input[name="gov-region"]:checked');
-
-      if(!region){ errorQ0.classList.remove('hidden'); valid=false; }
-      else{ errorQ0.classList.add('hidden'); }
-
-      if(region){
-        if(region.value === "us") {
-          const q1 = document.querySelector('input[name="all-authors"]:checked');
-          if(!q1){ errorQ1.classList.remove('hidden'); valid=false; } else{ errorQ1.classList.add('hidden'); }
-
-          if(q1 && q1.value==="no"){
-            const q2 = document.querySelector('input[name="self-gov"]:checked');
-            const q3 = document.querySelector('input[name="coauthors-gov"]:checked');
-
-            if(!q2){ errorQ2.classList.remove('hidden'); valid=false; } else{ errorQ2.classList.add('hidden'); }
-            if(!q3){ errorQ3.classList.remove('hidden'); valid=false; } else{ errorQ3.classList.add('hidden'); }
-          }
-
-        } else if(region.value === "other") {
-          const crown = document.querySelector('input[name="crown-copyright"]:checked');
-          if(!crown){ errorCrown.classList.remove('hidden'); valid=false; } else{ errorCrown.classList.add('hidden'); }
-
-          const errorCrownSubmit = document.getElementById('error-crown-submit');
-
-if(crown && crown.value === 'yes'){
-  errorCrownSubmit.classList.remove('hidden');
-  valid=false;
-} else {
-  errorCrownSubmit.classList.add('hidden');
 }
+
+// Button validation
+document.getElementById("continue-btn").addEventListener("click", function () {
+  let valid = true;
+
+  // Check the confirm checkbox
+  if(!confirmCheckbox.checked) {
+    errorConfirm.classList.remove('hidden');
+    valid = false;
+  } else {
+    errorConfirm.classList.add('hidden');
+  }
+
+  if(confirmCheckbox.checked) {
+    const region = document.querySelector('input[name="gov-region"]:checked');
+
+    if(!region){
+      errorQ0.classList.remove('hidden');
+      valid = false;
+    } else {
+      errorQ0.classList.add('hidden');
+    }
+
+    if(region && region.value === "us"){
+      const q1 = document.querySelector('input[name="all-authors"]:checked');
+      if(!q1){
+        errorQ1.classList.remove('hidden');
+        valid = false;
+      } else {
+        errorQ1.classList.add('hidden');
+      }
+
+      if(q1 && q1.value === "no"){
+        const q2 = document.querySelector('input[name="self-gov"]:checked');
+        const q3 = document.querySelector('input[name="coauthors-gov"]:checked');
+
+        if(!q2){
+          errorQ2.classList.remove('hidden');
+          valid = false;
+        } else {
+          errorQ2.classList.add('hidden');
+        }
+
+        if(!q3){
+          errorQ3.classList.remove('hidden');
+          valid = false;
+        } else {
+          errorQ3.classList.add('hidden');
         }
       }
     }
 
-    if(valid){
-      alert("Form complete — proceed!");
+    // Crown flow
+    if(region && region.value === "other" && crownBlock){
+      const crown = document.querySelector('input[name="crown"]:checked');
+      if(!crown){
+        errorCrown.classList.remove('hidden');
+        valid = false;
+      } else {
+        errorCrown.classList.add('hidden');
+        if(crown.value === "yes"){
+          errorCrownSubmit.classList.remove('hidden');
+          valid = false;
+        } else {
+          errorCrownSubmit.classList.add('hidden');
+        }
+      }
     }
-  });
+  }
 
+  if(valid){
+    alert("Form complete — proceed!");
+  }
+});
 </script>
+
 
 </body>
 </html>
