@@ -231,8 +231,11 @@
     </div>
 
     <div id="crown-alert" class="info-alert hidden">
-        <p>Elsevier has an agreement with the UK government to apply the “Open Government License (OGL)” to work that is made Open Access and to which Crown Copyright is claimed. Please do not complete this form. <a href="https://service.elsevier.com/app/contact/supporthub/publishing/">Contact our support team</a> to verify whether the OGL applies to your article and await further instructions.</p>
-      </div>
+      <p>Elsevier has an agreement with the UK government to apply the “Open Government License (OGL)” to work that is made Open Access and to which Crown Copyright is claimed. Please do not complete this form. <a href="https://service.elsevier.com/app/contact/supporthub/publishing/">Contact our support team</a> to verify whether the OGL applies to your article and await further instructions.</p>
+    </div>
+
+    <!-- Inline red error for Crown = Yes -->
+    <div id="error-crown-submit" class="error hidden">You can't complete this form because Crown Copyright is asserted.</div>
 
   </div>
 
@@ -252,30 +255,60 @@ const q3Block = document.getElementById('coauthors-question');
 const crownBlock = document.getElementById('crown-question');
 const errorCrown = document.getElementById('error-crown');
 const crownAlert = document.getElementById('crown-alert');
-const errorCrownSubmit = document.getElementById('error-crown-submit');
+
+// Create a dedicated inline error for Crown Copyright submit
+let errorCrownSubmit = document.getElementById('error-crown-submit');
+if(!errorCrownSubmit){
+  errorCrownSubmit = document.createElement('div');
+  errorCrownSubmit.id = 'error-crown-submit';
+  errorCrownSubmit.className = 'error hidden';
+  errorCrownSubmit.innerText = "You cannot complete this form when Crown Copyright is asserted";
+  crownAlert.parentNode.insertBefore(errorCrownSubmit, crownAlert.nextSibling);
+}
 
 const errorQ0 = document.getElementById('error-q0');
 const errorQ1 = document.getElementById('error-q1');
 const errorQ2 = document.getElementById('error-q2');
 const errorQ3 = document.getElementById('error-q3');
 
-function clearAllUSQuestions() {
-  document.querySelectorAll(
-    'input[name="all-authors"], input[name="self-gov"], input[name="coauthors-gov"]'
-  ).forEach(r => r.checked = false);
+function clearInputs(container){
+  if(!container) return;
+  container.querySelectorAll('input').forEach(r => r.checked = false);
+}
 
+function hideUSQuestions(){
+  q1Block.classList.add('hidden');
+  q2Block.classList.add('hidden');
+  q3Block.classList.add('hidden');
+  clearInputs(q1Block);
+  clearInputs(q2Block);
+  clearInputs(q3Block);
   errorQ1.classList.add('hidden');
   errorQ2.classList.add('hidden');
   errorQ3.classList.add('hidden');
 }
 
+function hideCrown(){
+  if(!crownBlock) return;
+  crownBlock.classList.add('hidden');
+  clearInputs(crownBlock);
+  errorCrown.classList.add('hidden');
+  crownAlert.classList.add('hidden');
+  errorCrownSubmit.classList.add('hidden');
+}
+
 // Show baseline2 questions only if confirmed
 confirmCheckbox.addEventListener('change', () => {
-  if(confirmCheckbox.checked) {
+  if(confirmCheckbox.checked){
     baseline2Block.classList.remove('hidden');
     errorConfirm.classList.add('hidden');
   } else {
     baseline2Block.classList.add('hidden');
+    // Clear everything inside baseline2 when unchecking
+    hideUSQuestions();
+    hideCrown();
+    regionRadios.forEach(r => r.checked = false);
+    errorQ0.classList.add('hidden');
   }
 });
 
@@ -284,29 +317,21 @@ regionRadios.forEach(radio => {
   radio.addEventListener('change', () => {
     errorQ0.classList.add('hidden'); // clear error
 
-    if (radio.value === "us") {
+    if(radio.value === "us"){
+      hideCrown();
       q1Block.classList.remove('hidden');
       q2Block.classList.add('hidden');
       q3Block.classList.add('hidden');
-      if(crownBlock) crownBlock.classList.add('hidden');
-      if(errorCrown) errorCrown.classList.add('hidden');
-      if(crownAlert) crownAlert.classList.add('hidden');
-      if(errorCrownSubmit) errorCrownSubmit.classList.add('hidden');
-    } else if (radio.value === "other") {
+      clearInputs(q2Block);
+      clearInputs(q3Block);
+    } else if(radio.value === "other"){
+      hideUSQuestions();
       if(crownBlock) crownBlock.classList.remove('hidden');
-      q1Block.classList.add('hidden');
-      q2Block.classList.add('hidden');
-      q3Block.classList.add('hidden');
-      if(crownAlert) crownAlert.classList.add('hidden');
-      if(errorCrownSubmit) errorCrownSubmit.classList.add('hidden');
+      crownAlert.classList.add('hidden');
+      errorCrownSubmit.classList.add('hidden');
     } else { // "no"
-      q1Block.classList.add('hidden');
-      q2Block.classList.add('hidden');
-      q3Block.classList.add('hidden');
-      if(crownBlock) crownBlock.classList.add('hidden');
-      if(errorCrown) errorCrown.classList.add('hidden');
-      if(crownAlert) crownAlert.classList.add('hidden');
-      if(errorCrownSubmit) errorCrownSubmit.classList.add('hidden');
+      hideUSQuestions();
+      hideCrown();
     }
   });
 });
@@ -315,15 +340,11 @@ regionRadios.forEach(radio => {
 document.querySelectorAll('input[name="all-authors"]').forEach(radio => {
   radio.addEventListener('change', () => {
     errorQ1.classList.add('hidden');
-
-    if (radio.value === "yes") {
+    if(radio.value === "yes"){
       q2Block.classList.add('hidden');
       q3Block.classList.add('hidden');
-
-      document.querySelectorAll(
-        'input[name="self-gov"], input[name="coauthors-gov"]'
-      ).forEach(r => r.checked = false);
-
+      clearInputs(q2Block);
+      clearInputs(q3Block);
       errorQ2.classList.add('hidden');
       errorQ3.classList.add('hidden');
     } else {
@@ -342,35 +363,34 @@ document.querySelectorAll('input[name="coauthors-gov"]').forEach(r =>
 );
 
 // Crown copyright logic
-if(crownBlock) {
+if(crownBlock){
   const crownRadios = document.querySelectorAll('input[name="crown"]');
   crownRadios.forEach(radio => {
     radio.addEventListener('change', () => {
       errorCrown.classList.add('hidden');
-      if(radio.value === "yes") {
-        if(crownAlert) crownAlert.classList.remove('hidden');
-        if(errorCrownSubmit) errorCrownSubmit.classList.add('hidden');
+      errorCrownSubmit.classList.add('hidden');
+      if(radio.value === "yes"){
+        crownAlert.classList.remove('hidden');
       } else {
-        if(crownAlert) crownAlert.classList.add('hidden');
-        if(errorCrownSubmit) errorCrownSubmit.classList.add('hidden');
+        crownAlert.classList.add('hidden');
       }
     });
   });
 }
 
 // Button validation
-document.getElementById("continue-btn").addEventListener("click", function () {
+document.getElementById("continue-btn").addEventListener("click", function(){
   let valid = true;
 
   // Check the confirm checkbox
-  if(!confirmCheckbox.checked) {
+  if(!confirmCheckbox.checked){
     errorConfirm.classList.remove('hidden');
     valid = false;
   } else {
     errorConfirm.classList.add('hidden');
   }
 
-  if(confirmCheckbox.checked) {
+  if(confirmCheckbox.checked){
     const region = document.querySelector('input[name="gov-region"]:checked');
 
     if(!region){
@@ -432,6 +452,7 @@ document.getElementById("continue-btn").addEventListener("click", function () {
   }
 });
 </script>
+
 
 </body>
 </html>
