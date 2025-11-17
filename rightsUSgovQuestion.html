@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Government Employment</title>
+
+<!-- Google Fonts: IBM Plex Mono -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 18px;
+    margin: 2rem;
+    line-height: 1.6;
+  }
+
+  .question { 
+    margin-bottom: 2rem; 
+  }
+
+  .hidden { 
+    display: none; 
+  }
+
+  .error {
+    color: #d4351c;
+    margin-top: 0.5rem;
+    font-weight: bold;
+  }
+
+  /* Larger custom radios */
+  input[type="radio"] {
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    border: 2px solid #0b0c0c;
+    border-radius: 50%;
+    margin-right: 0.75rem;
+    position: relative;
+    cursor: pointer;
+  }
+
+  input[type="radio"]:checked::after {
+    content: "";
+    width: 14px;
+    height: 14px;
+    background: #1d70b8;
+    border-radius: 50%;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+  }
+
+  /* Larger checkbox with black outline */
+  input[type="checkbox"] {
+    width: 32px;
+    height: 26px;
+    border: 2px solid #0b0c0c;
+    margin-right: 0.75rem;
+    cursor: pointer;
+    appearance: none;
+    position: relative;
+  }
+
+  input[type="checkbox"]:checked {
+    background-color: #1d70b8;
+    border-color: #1d70b8;
+  }
+
+  input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 7px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.4rem;
+  }
+
+  label2 {
+    cursor: pointer;
+    display: flex;
+    margin-bottom: 0.4rem;
+  }
+
+  h1 {
+    font-size: 1.75em;
+  }
+
+  .govuk-button {
+    background-color: #1d70b8;
+    color: white;
+    padding: 0.9rem 1.6rem;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    margin-top: 1rem;
+    font-family: "IBM Plex Mono", monospace;
+  }
+
+  .govuk-button:hover {
+    background-color: #003078;
+  }
+
+  .info-paragraph a {
+    color: #1d70b8;
+    text-decoration: underline;
+  }
+
+  /* Crown info alert */
+  .info-alert {
+    border: 2px solid #1d70b8;
+    background-color: #e7f3ff;
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+
+</style>
+</head>
+
+<body style="width: 680px; margin: 0 auto;">
+
+<h1>Provide copyright status information</h1>
+<p>Answer the following questions to confirm the copyright status of the authors.</p>
+
+<form id="gov-form">
+
+  <!-- New first question -->
+  <div id="confirm-block" class="question">
+    <label2>
+      <input type="checkbox" id="confirm-checkbox">
+      <strong>Confirm that you are authorised to act on behalf of all the authors of this work</strong>
+    </label2>
+    <div class="info-paragraph">
+      <p>If you are the only author you can <a href="#">go back to the co-author page</a>.</p>
+    </div>
+    <div id="error-confirm" class="error hidden">You must confirm before proceeding</div>
+  </div>
+
+  <!-- Rest of baseline2 hidden until checkbox is checked -->
+  <div id="baseline2-block" class="hidden">
+
+    <!-- Question 0 (original) -->
+    <div class="question">
+      <p><strong>Do any of the authors work for the US, UK, Canada or Australia government?</strong></p>
+
+      <label>
+        <input type="radio" name="gov-region" value="us"> US
+      </label>
+
+      <label>
+        <input type="radio" name="gov-region" value="other"> UK, Canada or Australia
+      </label>
+
+      <div id="error-q0" class="error hidden">Select US or UK, Canada or Australia</div>
+    </div>
+
+    <!-- Crown Copyright question for UK/Canada/Australia -->
+    <div id="crown-question" class="question hidden">
+      <p><strong>Is Crown Copyright asserted?</strong></p>
+
+      <label>
+        <input type="radio" name="crown-copyright" value="yes"> Yes
+      </label>
+
+      <label>
+        <input type="radio" name="crown-copyright" value="no"> No
+      </label>
+
+      <div id="error-crown" class="error hidden">Select yes or no</div>
+
+      <div id="crown-alert" class="info-alert hidden">
+        <p>Elsevier has an agreement with the UK government to apply the “Open Government License (OGL)” to work that is made Open Access and to which Crown Copyright is claimed. Please do not complete this form. <a href="https://service.elsevier.com/app/contact/supporthub/publishing/">Contact our support team</a> to verify whether the OGL applies to your article and await further instructions.</p>
+      </div>
+<div id="error-crown-submit" class="error hidden">You can't complete this form</div>
+    </div>
+
+    <!-- Original Q1 -->
+    <div id="q1-block" class="question hidden">
+      <p><strong>Do all of the authors work for the US government?</strong></p>
+
+      <label>
+        <input type="radio" name="all-authors" value="yes"> Yes
+      </label>
+
+      <label>
+        <input type="radio" name="all-authors" value="no"> No
+      </label>
+
+      <div id="error-q1" class="error hidden">Select yes or no</div>
+    </div>
+
+    <!-- Original Q2 -->
+    <div id="yourself-question" class="question hidden">
+      <p><strong>Do you work for the US government?</strong></p>
+
+      <label>
+        <input type="radio" name="self-gov" value="yes"> Yes
+      </label>
+
+      <label>
+        <input type="radio" name="self-gov" value="no"> No
+      </label>
+
+      <div id="error-q2" class="error hidden">Select yes or no</div>
+    </div>
+
+    <!-- Original Q3 -->
+    <div id="coauthors-question" class="question hidden">
+      <p><strong>Do any of the co-authors work for the US government?</strong></p>
+
+      <label>
+        <input type="radio" name="coauthors-gov" value="yes"> Yes
+      </label>
+
+      <label>
+        <input type="radio" name="coauthors-gov" value="no"> No
+      </label>
+
+      <div id="error-q3" class="error hidden">Select yes or no</div>
+    </div>
+
+  </div>
+
+  <button id="continue-btn" class="govuk-button" type="button">Save and continue</button>
+
+</form>
+
+<script>
+  const confirmCheckbox = document.getElementById('confirm-checkbox');
+  const baseline2Block = document.getElementById('baseline2-block');
+  const errorConfirm = document.getElementById('error-confirm');
+
+  // Show baseline2 questions only if confirmed
+  confirmCheckbox.addEventListener('change', () => {
+    if(confirmCheckbox.checked) {
+      baseline2Block.classList.remove('hidden');
+      errorConfirm.classList.add('hidden');
+    } else {
+      baseline2Block.classList.add('hidden');
+    }
+  });
+
+  const regionRadios = document.querySelectorAll('input[name="gov-region"]');
+  const q1Block = document.getElementById('q1-block');
+  const q2Block = document.getElementById('yourself-question');
+  const q3Block = document.getElementById('coauthors-question');
+
+  const crownBlock = document.getElementById('crown-question');
+  const crownRadios = document.querySelectorAll('input[name="crown-copyright"]');
+  const crownAlert = document.getElementById('crown-alert');
+  const errorQ0 = document.getElementById('error-q0');
+  const errorQ1 = document.getElementById('error-q1');
+  const errorQ2 = document.getElementById('error-q2');
+  const errorQ3 = document.getElementById('error-q3');
+  const errorCrown = document.getElementById('error-crown');
+
+  function clearAllUSQuestions() {
+    document.querySelectorAll(
+      'input[name="all-authors"], input[name="self-gov"], input[name="coauthors-gov"]'
+    ).forEach(r => r.checked = false);
+
+    errorQ1.classList.add('hidden');
+    errorQ2.classList.add('hidden');
+    errorQ3.classList.add('hidden');
+  }
+
+  // Show Q1/US questions or Crown question depending on region
+  regionRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      errorQ0.classList.add('hidden');
+      crownBlock.classList.add('hidden');
+      crownAlert.classList.add('hidden');
+      errorCrown.classList.add('hidden');
+
+      if(radio.value === "us") {
+        q1Block.classList.remove('hidden');
+      } else {
+        q1Block.classList.add('hidden');
+        q2Block.classList.add('hidden');
+        q3Block.classList.add('hidden');
+        clearAllUSQuestions();
+        crownBlock.classList.remove('hidden');
+      }
+    });
+  });
+
+  // Crown alert logic
+  crownRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      errorCrown.classList.add('hidden');
+      if(radio.value === 'yes'){
+        crownAlert.classList.remove('hidden');
+      } else {
+        crownAlert.classList.add('hidden');
+      }
+    });
+  });
+
+  // When Q1 changes show/hide Q2 + Q3
+  document.querySelectorAll('input[name="all-authors"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      errorQ1.classList.add('hidden');
+
+      if (radio.value === "yes") {
+        q2Block.classList.add('hidden');
+        q3Block.classList.add('hidden');
+
+        document.querySelectorAll(
+          'input[name="self-gov"], input[name="coauthors-gov"]'
+        ).forEach(r => r.checked = false);
+
+        errorQ2.classList.add('hidden');
+        errorQ3.classList.add('hidden');
+      } else {
+        q2Block.classList.remove('hidden');
+        q3Block.classList.remove('hidden');
+      }
+    });
+  });
+
+  // Hide supplemental errors when answered
+  document.querySelectorAll('input[name="self-gov"]').forEach(r =>
+    r.addEventListener('change', () => errorQ2.classList.add('hidden'))
+  );
+  document.querySelectorAll('input[name="coauthors-gov"]').forEach(r =>
+    r.addEventListener('change', () => errorQ3.classList.add('hidden'))
+  );
+
+  // Save & Continue validation
+  document.getElementById("continue-btn").addEventListener("click", function () {
+    let valid = true;
+
+    if(!confirmCheckbox.checked){
+      errorConfirm.classList.remove('hidden');
+      valid=false;
+    } else { errorConfirm.classList.add('hidden'); }
+
+    if(confirmCheckbox.checked){
+      const region = document.querySelector('input[name="gov-region"]:checked');
+
+      if(!region){ errorQ0.classList.remove('hidden'); valid=false; }
+      else{ errorQ0.classList.add('hidden'); }
+
+      if(region){
+        if(region.value === "us") {
+          const q1 = document.querySelector('input[name="all-authors"]:checked');
+          if(!q1){ errorQ1.classList.remove('hidden'); valid=false; } else{ errorQ1.classList.add('hidden'); }
+
+          if(q1 && q1.value==="no"){
+            const q2 = document.querySelector('input[name="self-gov"]:checked');
+            const q3 = document.querySelector('input[name="coauthors-gov"]:checked');
+
+            if(!q2){ errorQ2.classList.remove('hidden'); valid=false; } else{ errorQ2.classList.add('hidden'); }
+            if(!q3){ errorQ3.classList.remove('hidden'); valid=false; } else{ errorQ3.classList.add('hidden'); }
+          }
+
+        } else if(region.value === "other") {
+          const crown = document.querySelector('input[name="crown-copyright"]:checked');
+          if(!crown){ errorCrown.classList.remove('hidden'); valid=false; } else{ errorCrown.classList.add('hidden'); }
+
+          const errorCrownSubmit = document.getElementById('error-crown-submit');
+
+if(crown && crown.value === 'yes'){
+  errorCrownSubmit.classList.remove('hidden');
+  valid=false;
+} else {
+  errorCrownSubmit.classList.add('hidden');
+}
+        }
+      }
+    }
+
+    if(valid){
+      alert("Form complete — proceed!");
+    }
+  });
+
+</script>
+
+</body>
+</html>
