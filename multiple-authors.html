@@ -56,13 +56,14 @@
   input[type="checkbox"] {
     width: 32px;
     height: 26px;
-    border: 2px solid #0b0c0c;
+    border: 2px solid #0b0c0c; /* black border like radios */
     margin-right: 0.75rem;
     cursor: pointer;
     appearance: none;
     position: relative;
   }
 
+  /* Checked state: blue fill and white tick */
   input[type="checkbox"]:checked {
     background-color: #1d70b8;
     border-color: #1d70b8;
@@ -117,14 +118,17 @@
     text-decoration: underline;
   }
 
-  /* Crown info alert */
   .info-alert {
-    border: 2px solid #1d70b8;
-    background-color: #e7f3ff;
+    border: 2px solid #ffdd00;
+    background-color: #fff9e5;
     padding: 1rem;
     margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 
+  .info-alert p {
+    margin: 0.5rem 0;
+  }
 </style>
 </head>
 
@@ -135,7 +139,7 @@
 
 <form id="gov-form">
 
-  <!-- New first question -->
+  <!-- Confirm checkbox -->
   <div id="confirm-block" class="question">
     <label2>
       <input type="checkbox" id="confirm-checkbox">
@@ -147,46 +151,26 @@
     <div id="error-confirm" class="error hidden">You must confirm before proceeding</div>
   </div>
 
-  <!-- Rest of baseline2 hidden until checkbox is checked -->
+  <!-- Rest of form hidden until confirmed -->
   <div id="baseline2-block" class="hidden">
 
-    <!-- Question 0 (original) -->
+    <!-- Question 0 -->
     <div class="question">
-  <p><strong>Do any of the authors work for the US, UK, Canada or Australia government?</strong></p>
-
-  <label>
-    <input type="radio" name="gov-region" value="no"> No
-  </label>
-
-  <label>
-    <input type="radio" name="gov-region" value="us"> US
-  </label>
-
-  <label>
-    <input type="radio" name="gov-region" value="other"> UK, Canada or Australia
-  </label>
-
-  <div id="error-q0" class="error hidden">Select No, US or UK, Canada or Australia</div>
-</div>
-
-    <!-- Crown Copyright question for UK/Canada/Australia -->
-    <div id="crown-question" class="question hidden">
-      <p><strong>Is Crown Copyright asserted?</strong></p>
+      <p><strong>Do any of the authors work for the US, UK, Canada or Australia government?</strong></p>
 
       <label>
-        <input type="radio" name="crown-copyright" value="yes"> Yes
+        <input type="radio" name="gov-region" value="no"> No
       </label>
 
       <label>
-        <input type="radio" name="crown-copyright" value="no"> No
+        <input type="radio" name="gov-region" value="us"> US
       </label>
 
-      <div id="error-crown" class="error hidden">Select yes or no</div>
+      <label>
+        <input type="radio" name="gov-region" value="other"> UK, Canada or Australia
+      </label>
 
-      <div id="crown-alert" class="info-alert hidden">
-        <p>Elsevier has an agreement with the UK government to apply the “Open Government License (OGL)” to work that is made Open Access and to which Crown Copyright is claimed. Please do not complete this form. <a href="https://service.elsevier.com/app/contact/supporthub/publishing/">Contact our support team</a> to verify whether the OGL applies to your article and await further instructions.</p>
-      </div>
-<div id="error-crown-submit" class="error hidden">You can't complete this form</div>
+      <div id="error-q0" class="error hidden">Select No, US, or UK, Canada or Australia</div>
     </div>
 
     <!-- Original Q1 -->
@@ -233,6 +217,22 @@
 
       <div id="error-q3" class="error hidden">Select yes or no</div>
     </div>
+
+    <!-- Crown copyright for UK/Canada/Australia -->
+    <div id="crown-question" class="question hidden">
+      <p><strong>Is Crown Copyright asserted?</strong></p>
+      <label>
+        <input type="radio" name="crown" value="yes"> Yes
+      </label>
+      <label>
+        <input type="radio" name="crown" value="no"> No
+      </label>
+      <div id="error-crown" class="error hidden">Select yes or no</div>
+    </div>
+
+    <div id="crown-alert" class="info-alert hidden">
+        <p>Elsevier has an agreement with the UK government to apply the “Open Government License (OGL)” to work that is made Open Access and to which Crown Copyright is claimed. Please do not complete this form. <a href="https://service.elsevier.com/app/contact/supporthub/publishing/">Contact our support team</a> to verify whether the OGL applies to your article and await further instructions.</p>
+      </div>
 
   </div>
 
@@ -290,11 +290,15 @@ regionRadios.forEach(radio => {
       q3Block.classList.add('hidden');
       if(crownBlock) crownBlock.classList.add('hidden');
       if(errorCrown) errorCrown.classList.add('hidden');
+      if(crownAlert) crownAlert.classList.add('hidden');
+      if(errorCrownSubmit) errorCrownSubmit.classList.add('hidden');
     } else if (radio.value === "other") {
       if(crownBlock) crownBlock.classList.remove('hidden');
       q1Block.classList.add('hidden');
       q2Block.classList.add('hidden');
       q3Block.classList.add('hidden');
+      if(crownAlert) crownAlert.classList.add('hidden');
+      if(errorCrownSubmit) errorCrownSubmit.classList.add('hidden');
     } else { // "no"
       q1Block.classList.add('hidden');
       q2Block.classList.add('hidden');
@@ -428,7 +432,6 @@ document.getElementById("continue-btn").addEventListener("click", function () {
   }
 });
 </script>
-
 
 </body>
 </html>
