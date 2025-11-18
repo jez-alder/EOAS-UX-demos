@@ -38,6 +38,13 @@
          flex-shrink: 0;
          Margin-top: 0;
          }
+         input[type="text"] {
+         width: 350px;
+         padding: 8px;
+         font-family: inherit;
+         font-size: 18px;
+         border: 2px solid;
+         }
          input[type="radio"]:checked::after {
          content: "";
          width: 14px;
@@ -152,7 +159,7 @@
          <!-- Contract number input -->
          <div id="contract-number-block" class="question hidden">
             <p><strong>Contract number</strong></p>
-            <input type="text" id="contract-number" style="width: 300px; padding: 6px; font-family: inherit; font-size: 16px;">
+            <input type="text" id="contract-number">
             <div id="error-contract-number" class="error hidden">Enter a contract number</div>
          </div>
          <!-- Existing US block -->
