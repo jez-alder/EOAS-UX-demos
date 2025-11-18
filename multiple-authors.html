@@ -13,7 +13,10 @@
     font-size: 18px;
     margin: 2rem;
     line-height: 1.6;
+width: 720px;
+margin: 0 auto;
   }
+
 
   .question { 
     margin-bottom: 2rem; 
@@ -30,7 +33,6 @@
     font-weight: bold;
   }
 
-  /* Custom radio buttons */
   input[type="radio"] {
     appearance: none;
     width: 26px;
@@ -41,7 +43,6 @@
     position: relative;
     cursor: pointer;
     flex-shrink: 0;
-    margin-top: 0;
   }
 
   input[type="radio"]:checked::after {
@@ -55,7 +56,6 @@
     left: 4px;
   }
 
-  /* Custom checkbox */
   input[type="checkbox"] {
     width: 26px;
     height: 26px;
@@ -97,9 +97,8 @@
     margin-bottom: 0.4rem;
   }
 
-  h1 {
-    font-size: 1.75em;
-  }
+  h1 { font-size: 1.75em; }
+  h2 { font-size: 1.25em; }
 
   .govuk-button {
     background-color: #1d70b8;
@@ -130,31 +129,24 @@
     animation: fadeIn 150ms ease-out;
   }
 
-  .info-alert p {
-    margin: 0.5rem 0;
-  }
+  .info-alert p { margin: 0.5rem 0; }
 
   @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(4px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 </style>
 </head>
 
-<body style="width: 680px; margin: 0 auto;">
+
 
 <h1>Provide copyright status information</h1>
 <p>Answer the following questions to confirm the copyright status of the authors.</p>
+<h2>This work has multiple authors</h2>
 
 <form id="gov-form">
 
-  <!-- Confirm checkbox -->
+  <!-- Confirm -->
   <div id="confirm-block" class="question">
     <label2>
       <input type="checkbox" id="confirm-checkbox">
@@ -168,7 +160,7 @@
 
   <div id="baseline2-block" class="hidden">
 
-    <!-- Question 0 -->
+    <!-- Q0 -->
     <div class="question">
       <p><strong>Do any of the authors work for the US, UK, Canada or Australia government?</strong></p>
 
@@ -179,20 +171,37 @@
       <div id="error-q0" class="error hidden">Select No, US, or UK, Canada or Australia</div>
     </div>
 
-    <!-- US follow-up -->
+    <!-- NEW CONTRACTOR QUESTION -->
+    <div id="contractor-block" class="question hidden">
+      <p><strong>Are any of the authors contractors of the US government?</strong></p>
+
+      <label><input type="radio" name="contractor" value="yes"> Yes</label>
+      <label><input type="radio" name="contractor" value="no"> No</label>
+
+      <div id="error-contractor" class="error hidden">Select yes or no</div>
+    </div>
+
+    <!-- Contract number input -->
+    <div id="contract-number-block" class="question hidden">
+      <p><strong>Contract number</strong></p>
+      <input type="text" id="contract-number" style="width: 300px; padding: 6px; font-family: inherit; font-size: 16px;">
+      <div id="error-contract-number" class="error hidden">Enter a contract number</div>
+    </div>
+
+    <!-- Existing US block -->
     <div id="us-block" class="question hidden">
       <p><strong>Which statement best describes the authors?</strong></p>
 
-      <label><input type="radio" name="us-set" value="all-us"> We all work for the US government</label>
-      <label><input type="radio" name="us-set" value="i-but-not-all"> I work for the US government, but some co-authors do not</label>
-      <label><input type="radio" name="us-set" value="not-me-but-some"> I do not work for the US government, but some co-authors do</label>
+      <label><input type="radio" name="us-set" value="all-us"> All of the authors work for the US government</label>
+      <label><input type="radio" name="us-set" value="i-but-not-all"> You work for the US government, but some co-authors do not</label>
+      <label><input type="radio" name="us-set" value="not-me-but-some"> You do not work for the US government, but some co-authors do</label>
 
       <div id="error-us" class="error hidden">Select one option</div>
       <div id="us-alert" class="info-alert hidden">When all authors are US Government employees and the article is public domain, the 'License of publishing rights' clause in your agreement does not apply.</div>
       <div id="error-us-submit" class="error hidden">You cannot complete this form when “We all work for US government” is selected.</div>
     </div>
 
-    <!-- Crown for UK/Canada/Australia -->
+    <!-- Crown block -->
     <div id="crown-question" class="question hidden">
       <p><strong>Is Crown Copyright asserted?</strong></p>
       <label><input type="radio" name="crown" value="yes"> Yes</label>
@@ -201,7 +210,7 @@
     </div>
 
     <div id="crown-alert" class="info-alert hidden">
-      <p>Elsevier has an agreement with the UK government to apply the “Open Government License (OGL)” to work that is made Open Access and to which Crown Copyright is claimed. Please do not complete this form. <a href="https://service.elsevier.com/app/contact/supporthub/publishing/">Contact our support team</a> to verify whether the OGL applies to your article and await further instructions.</p>
+      <p>Elsevier has an agreement with the UK government to apply the “Open Government License (OGL)” to work that is made Open Access and to which Crown Copyright is claimed. Please do not complete this form. <a href="https://service.elsevier.com/app/contact/supporthub/publishing/">Contact support</a>.</p>
     </div>
     <div id="error-crown-submit" class="error hidden">You can't complete this form because Crown Copyright is asserted.</div>
 
@@ -212,11 +221,21 @@
 </form>
 
 <script>
+// --- ELEMENTS ---
 const confirmCheckbox = document.getElementById('confirm-checkbox');
 const baseline2Block = document.getElementById('baseline2-block');
 const errorConfirm = document.getElementById('error-confirm');
 
 const regionRadios = document.querySelectorAll('input[name="gov-region"]');
+
+const contractorBlock = document.getElementById('contractor-block');
+const contractorRadios = document.querySelectorAll('input[name="contractor"]');
+const errorContractor = document.getElementById('error-contractor');
+
+const contractNumberBlock = document.getElementById('contract-number-block');
+const contractNumberInput = document.getElementById('contract-number');
+const errorContractNum = document.getElementById('error-contract-number');
+
 const usBlock = document.getElementById('us-block');
 const errorUS = document.getElementById('error-us');
 const usAlert = document.getElementById('us-alert');
@@ -229,53 +248,95 @@ const errorCrownSubmit = document.getElementById('error-crown-submit');
 
 const errorQ0 = document.getElementById('error-q0');
 
-// Show baseline2 only if confirmed
+// Utility to clear inputs
+function clearInputs(block){
+  if(!block) return;
+  block.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  const textInput = block.querySelector('input[type="text"]');
+  if(textInput) textInput.value = "";
+}
+
+// --- Confirm checkbox ---
 confirmCheckbox.addEventListener('change', () => {
   if(confirmCheckbox.checked){
     baseline2Block.classList.remove('hidden');
     errorConfirm.classList.add('hidden');
   } else {
     baseline2Block.classList.add('hidden');
+
+    // Hide everything + clear values
+    contractorBlock.classList.add('hidden');
+    contractNumberBlock.classList.add('hidden');
     usBlock.classList.add('hidden');
     crownBlock.classList.add('hidden');
+
     usAlert.classList.add('hidden');
     crownAlert.classList.add('hidden');
     errorUSSubmit.classList.add('hidden');
     errorCrownSubmit.classList.add('hidden');
+
+    clearInputs(contractorBlock);
+    clearInputs(contractNumberBlock);
+    clearInputs(usBlock);
+    clearInputs(crownBlock);
+
     regionRadios.forEach(r => r.checked = false);
   }
 });
 
-// Show/hide follow-ups
+// --- Region selection ---
 regionRadios.forEach(radio => {
   radio.addEventListener('change', () => {
     errorQ0.classList.add('hidden');
 
+    // Reset US & contractor paths
+    contractorBlock.classList.add('hidden');
+    contractNumberBlock.classList.add('hidden');
+    usBlock.classList.add('hidden');
+    usAlert.classList.add('hidden');
+    errorUSSubmit.classList.add('hidden');
+    clearInputs(contractorBlock);
+    clearInputs(contractNumberBlock);
+    clearInputs(usBlock);
+
+    // Reset Crown path
+    crownBlock.classList.add('hidden');
+    crownAlert.classList.add('hidden');
+    errorCrownSubmit.classList.add('hidden');
+    clearInputs(crownBlock);
+
     if(radio.value === 'us'){
-      usBlock.classList.remove('hidden');
-      crownBlock.classList.add('hidden');
-      crownAlert.classList.add('hidden');
-      errorCrownSubmit.classList.add('hidden');
-    } else if(radio.value === 'other'){
+      contractorBlock.classList.remove('hidden');
+    }
+    else if(radio.value === 'other'){
       crownBlock.classList.remove('hidden');
-      usBlock.classList.add('hidden');
-      usAlert.classList.add('hidden');
-      errorUSSubmit.classList.add('hidden');
-    } else { // no
-      usBlock.classList.add('hidden');
-      crownBlock.classList.add('hidden');
-      usAlert.classList.add('hidden');
-      crownAlert.classList.add('hidden');
-      errorUSSubmit.classList.add('hidden');
-      errorCrownSubmit.classList.add('hidden');
     }
   });
 });
 
-// US follow-up logic
+// --- Contractor logic ---
+contractorRadios.forEach(radio => {
+  radio.addEventListener('change', () => {
+    errorContractor.classList.add('hidden');
+    errorContractNum.classList.add('hidden');
+
+    if(radio.value === 'yes'){
+      contractNumberBlock.classList.remove('hidden');
+    } else {
+      contractNumberBlock.classList.add('hidden');
+      contractNumberInput.value = "";
+    }
+
+    // After answering contractor question → show US block
+    usBlock.classList.remove('hidden');
+  });
+});
+
+// --- US follow-up ---
 document.querySelectorAll('input[name="us-set"]').forEach(radio => {
   radio.addEventListener('change', () => {
     errorUS.classList.add('hidden');
+
     if(radio.value === 'all-us'){
       usAlert.classList.remove('hidden');
     } else {
@@ -285,11 +346,12 @@ document.querySelectorAll('input[name="us-set"]').forEach(radio => {
   });
 });
 
-// Crown logic
+// --- Crown logic ---
 document.querySelectorAll('input[name="crown"]').forEach(radio => {
   radio.addEventListener('change', () => {
     errorCrown.classList.add('hidden');
     errorCrownSubmit.classList.add('hidden');
+
     if(radio.value === 'yes'){
       crownAlert.classList.remove('hidden');
     } else {
@@ -299,58 +361,62 @@ document.querySelectorAll('input[name="crown"]').forEach(radio => {
   });
 });
 
-// Button validation
+// --- VALIDATION ---
 document.getElementById('continue-btn').addEventListener('click', () => {
   let valid = true;
 
+  // Confirm
   if(!confirmCheckbox.checked){
     errorConfirm.classList.remove('hidden');
     valid = false;
-  } else errorConfirm.classList.add('hidden');
+  }
 
   const region = document.querySelector('input[name="gov-region"]:checked');
   if(!region){
     errorQ0.classList.remove('hidden');
     valid = false;
-  } else errorQ0.classList.add('hidden');
+  }
 
-  // US follow-up validation
-  if(region && region.value==='us'){
+  // US branch
+  if(region && region.value === 'us'){
+
+    // Contractor question required
+    const contractor = document.querySelector('input[name="contractor"]:checked');
+    if(!contractor){
+      errorContractor.classList.remove('hidden');
+      valid = false;
+    }
+
+    // Contract number required if Yes
+    if(contractor && contractor.value === 'yes'){
+      if(contractNumberInput.value.trim() === ""){
+        errorContractNum.classList.remove('hidden');
+        valid = false;
+      }
+    }
+
+    // US statement required
     const usSet = document.querySelector('input[name="us-set"]:checked');
     if(!usSet){
       errorUS.classList.remove('hidden');
       valid = false;
-    } else {
-      errorUS.classList.add('hidden');
-      if(usSet.value==='all-us'){
-    usAlert.classList.remove('hidden');
-    // Do not block submission:
-    // errorUSSubmit.classList.remove('hidden');
-    // valid = false;
-} else {
-    usAlert.classList.add('hidden');
-    errorUSSubmit.classList.add('hidden');
-}
     }
   }
 
-  // Crown validation
-  if(region && region.value==='other'){
+  // Crown branch
+  if(region && region.value === 'other'){
     const crown = document.querySelector('input[name="crown"]:checked');
     if(!crown){
       errorCrown.classList.remove('hidden');
       valid = false;
-    } else {
-      errorCrown.classList.add('hidden');
-      if(crown.value==='yes'){
-        errorCrownSubmit.classList.remove('hidden');
-        valid = false;
-      } else errorCrownSubmit.classList.add('hidden');
+    } else if(crown.value === 'yes'){
+      errorCrownSubmit.classList.remove('hidden');
+      valid = false;
     }
   }
 
   if(valid){
-    alert('Form complete — proceed!');
+    alert("Form complete — proceed!");
   }
 });
 </script>
